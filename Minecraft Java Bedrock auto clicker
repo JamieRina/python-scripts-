@@ -1,0 +1,30 @@
+import time
+import threading
+from pynput import mouse, keyboard
+
+mouse_controller = mouse.Controller()
+
+CPS = 20   # Minecraft only accepts a certain amount of clicks
+clicking = False
+
+def clicker():
+    delay = 1 / CPS
+    while True:
+        if clicking:
+            mouse_controller.press(mouse.Button.left)
+            mouse_controller.release(mouse.Button.left)
+            time.sleep(delay)
+        else:
+            time.sleep(0.005)
+
+def on_press(key):
+    global clicking
+    if key == keyboard.Key.tab:
+        clicking = not clicking
+        print("Clicking:", clicking)
+
+threading.Thread(target=clicker, daemon=True).start()
+
+print("TAB = toggle auto-click (Minecraft)")
+with keyboard.Listener(on_press=on_press) as listener:
+    listener.join()
